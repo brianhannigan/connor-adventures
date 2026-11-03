@@ -41,6 +41,22 @@ const data=[{"name":"Sterling Hill Mining Museum Special Tour","category":"Exper
 const regionKey='connor_included_regions_v1';
 let includedRegions={nj:true,pa:true,ct:true};
 try{const x=JSON.parse(localStorage.getItem(regionKey)||'null');if(x&&typeof x==='object')for(const k of ['nj','pa','ct'])if(typeof x[k]==='boolean')includedRegions[k]=x[k]}catch{}
+/* Date-aware eligibility for November 4–6, 2026; only confirmed closures are excluded. */
+const visitStatus={
+ 'Space Farms Zoo':{state:'closed',note:'Closed for winter; operator says reopening March 26, 2027.'},
+ 'Dorney Park':{state:'closed',note:'No daytime operating hours confirmed Nov 4–6; official 2026 Halloween season ended Nov 1. Recheck operator calendar for special events.'},
+ 'Old Jail Museum':{state:'conditional',note:'Closed Wednesday Nov 4; Thursday/Friday weekday guided tours require reservations.'},
+ 'No. 9 Coal Mine & Museum':{state:'conditional',note:'November schedule differs across published sources; confirm weekday tours directly before traveling.'},
+ 'Ocean Beach Park':{state:'seasonal',note:'Beach swimming, pool and amusement rides are summer-season attractions; do not assume operation in November.'},
+ 'Camelback Mountain Adventures':{state:'seasonal',note:'Outdoor mountain attractions are seasonal; November operation unconfirmed.'},
+ 'Blue Mountain Resort mountain adventures':{state:'seasonal',note:'Outdoor adventure activities are seasonal; November operation unconfirmed.'},
+ 'Pocono Go-Karts and Play Park':{state:'seasonal',note:'Outdoor attraction; November hours not verified.'},
+ 'Riamede Farm':{state:'seasonal',note:'Farm activities depend on harvest season; November offerings unconfirmed.'},
+ 'Dutch Springs / Lake Hydra':{state:'seasonal',note:'Water recreation is seasonal; November activity unconfirmed.'}
+};
+function visitInfo(x){return visitStatus[x.name]||{state:'unverified',note:'November 4–6 operating hours have not been individually confirmed.'}}
+function visitEligible(x){return visitInfo(x).state!=='closed'&&visitInfo(x).state!=='seasonal'}
+function visitBadge(x){const v=visitInfo(x);return '<p class="muted"><b>'+({closed:'Closed for trip',seasonal:'Seasonal / not confirmed',conditional:'Schedule restrictions',unverified:'Hours not yet verified'}[v.state])+'</b> — '+esc(v.note)+'</p>'}
 function specificPlaceLink(x){
  try{const u=new URL(x.url);const host=u.hostname.startsWith('www.')?u.hostname.slice(4):u.hostname;const path=u.pathname.endsWith('/')?u.pathname.slice(0,-1):u.pathname;
  if(u.protocol!=='https:'||['google.com','maps.google.com','poconomountains.com','discoverlehighvalley.com','mysticchamber.org'].includes(host))return false;
@@ -118,7 +134,7 @@ function setPlannerMode(mode,focusId){
 }
 function simpleCandidates(){
  const area=$('simpleArea').value,kind=$('simpleKind').value;
- return data.filter(x=>regionAllowed(x)&&!x.waterpark&&(area==='all'||(x.ct?'ct':x.pa?'pa':'nj')===area)&&(kind==='all'||(kind==='overnight'?x.overnight:x.weather==='Indoor'))).sort((a,b)=>Number(b.top)-Number(a.top)||a.drive-b.drive);
+ return data.filter(x=>visitEligible(x)&&regionAllowed(x)&&!x.waterpark&&(area='all'||(x.ct?'ct':x.pa?'pa':'nj')===area)&&(kind==='all'||(kind==='overnight'?x.overnight:x.weather==='Indoor'))).sort((a,b)=>Number(b.top)-Number(a.top)||a.drive-b.drive);
 }
 function simpleRender(){
  const options=simpleCandidates();
@@ -135,7 +151,7 @@ $('detailedMode').onclick=()=>setPlannerMode('detailed');
 $('magicMode').onclick=()=>setPlannerMode('magic','magicHome');
 function shakeMagic(){
  const area=$('magicArea').value,overnight=$('magicStyle').value==='overnight';
- const pool=data.filter(x=>regionAllowed(x)&&!x.waterpark&&(area==='all'||(x.ct?'ct':x.pa?'pa':'nj')===area));
+ const pool=data.filter(x=>visitEligible(x)&&regionAllowed(x)&&!x.waterpark&&(area==='all'||(x.ct?'ct':x.pa?'pa':'nj')===area));
  const mainPool=pool.filter(x=>!overnight||x.overnight);
  const out=$('magicResult');
  if(!mainPool.length){out.textContent='No matching adventures in the included states. Try a different area or select more states in Detailed Mode.';return}
