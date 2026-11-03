@@ -134,7 +134,7 @@ function setPlannerMode(mode,focusId){
 }
 function simpleCandidates(){
  const area=$('simpleArea').value,kind=$('simpleKind').value;
- return data.filter(x=>visitEligible(x)&&regionAllowed(x)&&!x.waterpark&&(area='all'||(x.ct?'ct':x.pa?'pa':'nj')===area)&&(kind==='all'||(kind==='overnight'?x.overnight:x.weather==='Indoor'))).sort((a,b)=>Number(b.top)-Number(a.top)||a.drive-b.drive);
+ return data.filter(x=>visitEligible(x)&&regionAllowed(x)&&!x.waterpark&&(area==='all'||(x.ct?'ct':x.pa?'pa':'nj')===area)&&(kind==='all'||(kind==='overnight'?x.overnight:x.weather==='Indoor'))).sort((a,b)=>Number(b.top)-Number(a.top)||a.drive-b.drive);
 }
 function simpleRender(){
  const options=simpleCandidates();
