@@ -42,10 +42,9 @@ const regionKey='connor_included_regions_v1';
 let includedRegions={nj:true,pa:true,ct:true};
 try{const x=JSON.parse(localStorage.getItem(regionKey)||'null');if(x&&typeof x==='object')for(const k of ['nj','pa','ct'])if(typeof x[k]==='boolean')includedRegions[k]=x[k]}catch{}
 function specificPlaceLink(x){
- try{const u=new URL(x.url);const host=u.hostname.replace(/^www\\./,'');const path=u.pathname.replace(/\\/$/,'');
- if(!/^https:$/.test(u.protocol)||host==='google.com'||host==='maps.google.com'||host==='poconomountains.com'||host==='discoverlehighvalley.com'||host==='mysticchamber.org')return false;
- if(!path||path==='/')return false;
- if(['/things-to-do','/places-to-stay','/maps-and-apps'].includes(path))return false;
+ try{const u=new URL(x.url);const host=u.hostname.startsWith('www.')?u.hostname.slice(4):u.hostname;const path=u.pathname.endsWith('/')?u.pathname.slice(0,-1):u.pathname;
+ if(u.protocol!=='https:'||['google.com','maps.google.com','poconomountains.com','discoverlehighvalley.com','mysticchamber.org'].includes(host))return false;
+ if(!path||['/things-to-do','/places-to-stay','/maps-and-apps'].includes(path))return false;
  if(['americandream.com','skyzone.com','urbanair.com','gravityvault.com','morrisparks.net','nj.gov','essexcountyparks.org'].includes(host)&&path.split('/').filter(Boolean).length<2)return false;
  return true;
  }catch{return false}
