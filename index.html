@@ -17,9 +17,13 @@
 .simpleCard h3{font-size:17px;margin:0}.simpleCard p{font-size:14px;margin:0}.simpleCard .simpleCardActions{display:flex;flex-wrap:wrap;gap:7px;margin-top:auto}
 .simpleCard a{font-weight:650;color:#075b85}
 body.simple-mode main > :not(.modebar):not(#simpleHome){display:none!important}
+body.magic-mode main > :not(.modebar):not(#magicHome){display:none!important}
+body.simple-mode #magicHome,body.detailed-mode #magicHome{display:none!important}
+#magicHome{background:#fff;border:1px solid #dce5ed;border-radius:18px;padding:24px;text-align:center}#magicHome h2{margin-top:0}.magicBall{width:180px;height:180px;border-radius:50%;margin:20px auto;background:radial-gradient(circle at 32% 25%,#6377a0,#131e36 47%,#03060d 78%);box-shadow:inset -16px -22px 28px #0009,0 10px 24px #1a294055;display:grid;place-items:center;color:#fff;font-size:54px;font-weight:800}.magicBall span{border-radius:50%;background:#f8fafc;color:#19233b;width:82px;height:82px;display:grid;place-items:center}.magicBall.shaking{animation:magicShake .6s ease-in-out}@keyframes magicShake{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg) translateX(-9px)}40%{transform:rotate(12deg) translateX(9px)}60%{transform:rotate(-9deg)}80%{transform:rotate(9deg)}}#magicResult{text-align:left;max-width:750px;margin:18px auto}#magicResult article{border:1px solid #dce5ed;background:#f7fbfe;padding:14px;border-radius:12px;margin:10px 0}#magicResult a{color:#075b85;font-weight:650}.magicOptions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.magicOptions label{display:grid;text-align:left;gap:5px;font-size:13px;font-weight:700}
 body.detailed-mode #simpleHome{display:none!important}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-</style></head><body class="detailed-mode"><!-- Regenerated November 2, 2026; independent offline HTML file --><header><div class="head"><div style="font-size:12px;letter-spacing:.12em;text-transform:uppercase">Family trip decision center</div><h1>Connor's Unusual Adventures</h1><div class="sub">November 4–6, 2026 · NJ + Pennsylvania · Wednesday-night overnight possible · No camps</div></div></header><main><div class="modebar" aria-label="Planner display mode"><div><b>How would you like to plan?</b><div class="muted">Simple keeps things calm. Detailed includes every tool.</div></div><div role="group" aria-label="Display mode"><button type="button" id="simpleMode" aria-pressed="true">Simple</button> <button type="button" id="detailedMode" aria-pressed="false">Detailed</button></div></div>
+</style></head><body class="detailed-mode"><!-- Regenerated November 2, 2026; independent offline HTML file --><header><div class="head"><div style="font-size:12px;letter-spacing:.12em;text-transform:uppercase">Family trip decision center</div><h1>Connor's Unusual Adventures</h1><div class="sub">November 4–6, 2026 · NJ + Pennsylvania · Wednesday-night overnight possible · No camps</div></div></header><main><div class="modebar" aria-label="Planner display mode"><div><b>How would you like to plan?</b><div class="muted">Simple keeps things calm. Detailed includes every tool.</div></div><div role="group" aria-label="Display mode"><button type="button" id="simpleMode" aria-pressed="true">Simple</button> <button type="button" id="detailedMode" aria-pressed="false">Detailed</button> <button type="button" id="magicMode" aria-pressed="false">🎱 Magic 8 Ball</button></div></div>
+<section id="magicHome" aria-labelledby="magicHeading"><h2 id="magicHeading">🎱 Shake for a surprise adventure</h2><p>Let the Magic 8 Ball pick a main adventure and two nearby-area ideas. Review opening hours and tickets before leaving.</p><div class="magicBall" id="magicBall" aria-hidden="true"><span>8</span></div><div class="magicOptions"><label>Destination area<select id="magicArea"><option value="all">Surprise me anywhere</option><option value="nj">New Jersey</option><option value="pa">Pennsylvania</option><option value="ct">Connecticut</option></select></label><label>Trip style<select id="magicStyle"><option value="day">Day adventure</option><option value="overnight">Overnight getaway</option></select></label></div><p><button type="button" id="magicShake">🎱 Shake the Magic 8 Ball!</button></p><div id="magicResult" role="status" aria-live="polite"><p class="muted">Your surprise itinerary will appear here.</p></div></section>
 <section id="simpleHome" aria-labelledby="simpleHeading"><h2 id="simpleHeading">Find something fun, one step at a time</h2><p class="muted">Start with a few ideas. You can see everything whenever you want.</p>
 <div class="simpleActions"><button type="button" id="simpleExplore">✨ Show me some ideas<small>See up to six activities, without a long list.</small></button><button type="button" id="simpleRoute">🚗 Build a day or overnight trip<small>Choose a destination and add stops along the way.</small></button><button type="button" id="simpleSaved">♥ My saved adventures<small>Return to the choices you already made.</small></button></div>
 <div id="simpleControls" class="filters"><label>Where?<select id="simpleArea"><option value="all">Anywhere included</option><option value="nj">New Jersey</option><option value="pa">Pennsylvania</option><option value="ct">Connecticut</option></select></label><label>Type of day<select id="simpleKind"><option value="all">Surprise me</option><option value="indoor">Rain-safe / indoor</option><option value="overnight">Overnight ideas</option></select></label><button type="button" id="simpleNext" class="alt">Show different ideas</button></div>
@@ -95,9 +99,11 @@ let simplePage=0;
 function setPlannerMode(mode,focusId){
  const detailed=mode==='detailed';
  document.body.classList.toggle('detailed-mode',detailed);
- document.body.classList.toggle('simple-mode',!detailed);
- $('simpleMode').setAttribute('aria-pressed',String(!detailed));
+ document.body.classList.toggle('simple-mode',mode==='simple');
+ document.body.classList.toggle('magic-mode',mode==='magic');
+ $('simpleMode').setAttribute('aria-pressed',String(mode==='simple'));
  $('detailedMode').setAttribute('aria-pressed',String(detailed));
+ $('magicMode').setAttribute('aria-pressed',String(mode==='magic'));
  try{localStorage.setItem(simpleModeKey,mode)}catch{}
  if(focusId){const el=$(focusId);if(el){el.scrollIntoView({block:'start'});if(typeof el.focus==='function')el.focus({preventScroll:true})}}
 }
@@ -117,6 +123,23 @@ function simpleRender(){
 }
 $('simpleMode').onclick=()=>setPlannerMode('simple','simpleHome');
 $('detailedMode').onclick=()=>setPlannerMode('detailed');
+$('magicMode').onclick=()=>setPlannerMode('magic','magicHome');
+function shakeMagic(){
+ const area=$('magicArea').value,overnight=$('magicStyle').value==='overnight';
+ const pool=data.filter(x=>regionAllowed(x)&&!x.waterpark&&(area==='all'||(x.ct?'ct':x.pa?'pa':'nj')===area));
+ const mainPool=pool.filter(x=>!overnight||x.overnight);
+ const out=$('magicResult');
+ if(!mainPool.length){out.textContent='No matching adventures in the included states. Try a different area or select more states in Detailed Mode.';return}
+ const main=mainPool[Math.floor(Math.random()*mainPool.length)];
+ const nearby=pool.filter(x=>x.name!==main.name&&tripRegion(x)===tripRegion(main)).sort((a,b)=>tripSimilarity(main,b)-tripSimilarity(main,a));
+ const picks=[main,...nearby.slice(0,Math.min(2,nearby.length))];
+ const item=(x,i)=>'<article><strong>'+(i===0?'🌟 Main adventure':i===1?'☀️ Second stop':'🍽️ Optional extra stop')+': '+esc(x.name)+'</strong><p>'+esc(x.place)+' · '+esc(x.category)+' · approx. '+x.drive+' min from Flanders</p><p>'+esc(x.desc)+'</p><a href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer">Details and booking</a></article>';
+ out.innerHTML='<h3>Your surprise '+(overnight?'overnight getaway':'day itinerary')+'</h3><p class="muted">Suggested order: main adventure, second stop, optional extra stop. These are same-region suggestions, not verified route-adjacent stops or confirmed opening hours.</p>'+picks.map(item).join('')+'<p><button type="button" id="magicRoute">Open trip in Google Maps</button> <button type="button" class="alt" id="magicAgain">Shake again</button></p>';
+ $('magicRoute').onclick=()=>{const params=new URLSearchParams({api:'1',origin:tripOrigin,destination:tripOrigin,travelmode:'driving',waypoints:picks.map(x=>x.name+', '+x.place).join('|')});window.open('https://www.google.com/maps/dir/?'+params.toString(),'_blank','noopener,noreferrer')};
+ $('magicAgain').onclick=shakeMagic;
+ const ball=$('magicBall');ball.classList.remove('shaking');void ball.offsetWidth;ball.classList.add('shaking');
+}
+$('magicShake').onclick=shakeMagic;
 $('simpleExplore').onclick=()=>{simplePage=0;simpleRender();$('simpleControls').scrollIntoView({block:'center'})};
 $('simpleRoute').onclick=()=>setPlannerMode('detailed','tripBuilder');
 $('simpleSaved').onclick=()=>setPlannerMode('detailed','shortlist');
@@ -125,6 +148,6 @@ $('simpleNext').onclick=()=>{simplePage++;simpleRender()};
 ['simpleArea','simpleKind'].forEach(id=>$(id).onchange=()=>{simplePage=0;simpleRender()});
 /* Original sections stay in place. CSS handles the two views without moving DOM nodes. */
 const storedMode=(()=>{try{return localStorage.getItem(simpleModeKey)}catch{return null}})();
-setPlannerMode(storedMode==='detailed'?'detailed':'simple');
+setPlannerMode(['detailed','simple','magic'].includes(storedMode)?storedMode:'simple');
 simpleRender();
 </script></body></html>
