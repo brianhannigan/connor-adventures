@@ -16,8 +16,8 @@
 .simpleCard{border:1px solid #dce5ed;border-radius:12px;padding:15px;background:#f8fbfd;display:flex;flex-direction:column;gap:9px}
 .simpleCard h3{font-size:17px;margin:0}.simpleCard p{font-size:14px;margin:0}.simpleCard .simpleCardActions{display:flex;flex-wrap:wrap;gap:7px;margin-top:auto}
 .simpleCard a{font-weight:650;color:#075b85}
-body.simple-mode .detailed-section{display:none}
-body.detailed-mode #simpleHome{display:none}
+body.simple-mode main > :not(.modebar):not(#simpleHome){display:none!important}
+body.detailed-mode #simpleHome{display:none!important}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style></head><body><!-- Regenerated November 2, 2026; independent offline HTML file --><header><div class="head"><div style="font-size:12px;letter-spacing:.12em;text-transform:uppercase">Family trip decision center</div><h1>Connor's Unusual Adventures</h1><div class="sub">November 4–6, 2026 · NJ + Pennsylvania · Wednesday-night overnight possible · No camps</div></div></header><main><div class="modebar" aria-label="Planner display mode"><div><b>How would you like to plan?</b><div class="muted">Simple keeps things calm. Detailed includes every tool.</div></div><div role="group" aria-label="Display mode"><button type="button" id="simpleMode" aria-pressed="true">Simple</button> <button type="button" id="detailedMode" aria-pressed="false">Detailed</button></div></div>
 <section id="simpleHome" aria-labelledby="simpleHeading"><h2 id="simpleHeading">Find something fun, one step at a time</h2><p class="muted">Start with a few ideas. You can see everything whenever you want.</p>
@@ -98,7 +98,7 @@ function setPlannerMode(mode,focusId){
  $('simpleMode').setAttribute('aria-pressed',String(!detailed));
  $('detailedMode').setAttribute('aria-pressed',String(detailed));
  try{localStorage.setItem(simpleModeKey,mode)}catch{}
- if(focusId){const el=$(focusId);if(el){el.scrollIntoView({block:'start'});el.focus?.({preventScroll:true})}}
+ if(focusId){const el=$(focusId);if(el){el.scrollIntoView({block:'start'});if(typeof el.focus==='function')el.focus({preventScroll:true})}}
 }
 function simpleCandidates(){
  const area=$('simpleArea').value,kind=$('simpleKind').value;
@@ -122,12 +122,7 @@ $('simpleSaved').onclick=()=>setPlannerMode('detailed','shortlist');
 $('simpleAll').onclick=()=>setPlannerMode('detailed');
 $('simpleNext').onclick=()=>{simplePage++;simpleRender()};
 ['simpleArea','simpleKind'].forEach(id=>$(id).onchange=()=>{simplePage=0;simpleRender()});
-/* Group original top-level sections without modifying or removing their content. */
-(function(){
- const home=$('simpleHome'),main=home.parentElement;
- let node=home.nextSibling;
- while(node){const next=node.nextSibling;if(node.nodeType===1&&node.classList?.contains('modebar')){node=next;continue}if(node.nodeType===1&&node.tagName==='H2'){const group=document.createElement('section');group.className='detailed-section';main.insertBefore(group,node);let current=node;while(current&&!(current!==node&&current.nodeType===1&&current.tagName==='H2')){const following=current.nextSibling;group.appendChild(current);current=following}node=current;continue}if(node.nodeType===1){node.classList.add('detailed-section')}node=next}
-})();
+/* Original sections stay in place. CSS handles the two views without moving DOM nodes. */
 const storedMode=(()=>{try{return localStorage.getItem(simpleModeKey)}catch{return null}})();
 setPlannerMode(storedMode==='detailed'?'detailed':'simple');
 simpleRender();
